@@ -11,19 +11,19 @@ from comic_text_detector.utils.imgproc_utils import union_area, xywh2xyxypoly, r
 LANG_LIST = ['eng', 'ja', 'unknown']
 LANGCLS2IDX = {'eng': 0, 'ja': 1, 'unknown': 2}
 
-class TextBlock(object):
-    def __init__(self, xyxy: List, 
-                       lines: List = None, 
+class TextBlock:
+    def __init__(self, xyxy: list, 
+                       lines: list = None, 
                        language: str = 'unknown',
                        vertical: bool = False, 
                        font_size: float = -1,
-                       distance: List = None,
+                       distance: list = None,
                        angle: int = 0,
-                       vec: List = None,
+                       vec: list = None,
                        norm: float = -1,
                        merged: bool = False,
                        weight: float = -1,
-                       text: List = None,
+                       text: list = None,
                        translation: str = "",
                        fg_r = 0,
                        fg_g = 0,
@@ -39,7 +39,7 @@ class TextBlock(object):
                        alignment: int = -1,
                        alpha: float = 255,
                        rich_text: str = "",
-                       _bounding_rect: List = None,
+                       _bounding_rect: list = None,
                        accumulate_color = True,
                        default_stroke_width = 0.2,
                        target_lang: str = "",
@@ -266,7 +266,7 @@ class TextBlock(object):
             return self.default_stroke_width
         return 0
 
-def sort_textblk_list(blk_list: List[TextBlock], im_w: int, im_h: int) -> List[TextBlock]:
+def sort_textblk_list(blk_list: list[TextBlock], im_w: int, im_h: int) -> list[TextBlock]:
     if len(blk_list) == 0:
         return blk_list
     num_ja = 0
@@ -374,7 +374,7 @@ def try_merge_textline(blk: TextBlock, blk2: TextBlock, fntsize_tol=1.3, distanc
     blk2.merged = True
     return True
 
-def merge_textlines(blk_list: List[TextBlock]) -> List[TextBlock]:
+def merge_textlines(blk_list: list[TextBlock]) -> list[TextBlock]:
     if len(blk_list) < 2:
         return blk_list
     blk_list.sort(key=lambda blk: blk.distance[0])
@@ -420,8 +420,8 @@ def split_textblk(blk: TextBlock):
             current_blk.adjust_bbox(with_bbox=False)
     return textblock_splitted, sub_blk_list
 
-def group_output(blks, lines, im_w, im_h, mask=None, sort_blklist=True) -> List[TextBlock]:
-    blk_list: List[TextBlock] = []
+def group_output(blks, lines, im_w, im_h, mask=None, sort_blklist=True) -> list[TextBlock]:
+    blk_list: list[TextBlock] = []
     scattered_lines = {'ver': [], 'hor': []}
     for bbox, cls, conf in zip(*blks):
         # cls could give wrong result
@@ -509,7 +509,7 @@ def group_output(blks, lines, im_w, im_h, mask=None, sort_blklist=True) -> List[
             
     return final_blk_list
 
-def visualize_textblocks(canvas, blk_list:  List[TextBlock]):
+def visualize_textblocks(canvas, blk_list:  list[TextBlock]):
     lw = max(round(sum(canvas.shape) / 2 * 0.003), 2)  # line width
     for ii, blk in enumerate(blk_list):
         bx1, by1, bx2, by2 = blk.xyxy

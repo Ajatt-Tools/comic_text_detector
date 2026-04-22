@@ -210,7 +210,7 @@ class SegDetectorRepresenter():
             bitmap = bitmap.astype(np.float32)
         return cv2.mean(bitmap[ymin:ymax + 1, xmin:xmax + 1], mask)[0]
 
-class AverageMeter(object):
+class AverageMeter:
     """Computes and stores the average and current value"""
 
     def __init__(self):
@@ -230,7 +230,7 @@ class AverageMeter(object):
         return self
 
 
-class DetectionIoUEvaluator(object):
+class DetectionIoUEvaluator:
     def __init__(self, is_output_polygon=False, iou_constraint=0.5, area_precision_constraint=0.5):
         self.is_output_polygon = is_output_polygon
         self.iou_constraint = iou_constraint

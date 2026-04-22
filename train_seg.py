@@ -187,7 +187,7 @@ def train(hyp):
 
 if __name__ == '__main__':
     hyp_p = r'data/train_hyp.yaml'
-    with open(hyp_p, 'r', encoding='utf8') as f:
+    with open(hyp_p, encoding='utf8') as f:
         hyp = yaml.safe_load(f.read())
 
     hyp['data']['train_img_dir'] = [r'../datasets/codat_manga_v3/images/train', r'../datasets/ComicErased/processed']

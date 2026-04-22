@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 
 class BinaryDiceLoss(nn.Module):
-    """Dice loss of binary class
+    r"""Dice loss of binary class
     Args:
         smooth: A float number to smooth loss, and avoid NaN error, default: 1
         p: Denominator value: \sum{x^p} + \sum{y^p}, default: 2
@@ -21,7 +21,7 @@ class BinaryDiceLoss(nn.Module):
         Exception if unexpected reduction
     """
     def __init__(self, smooth=1, p=2, reduction='mean'):
-        super(BinaryDiceLoss, self).__init__()
+        super().__init__()
         self.smooth = smooth
         self.p = p
         self.reduction = reduction
@@ -43,7 +43,7 @@ class BinaryDiceLoss(nn.Module):
         elif self.reduction == 'none':
             return loss
         else:
-            raise Exception('Unexpected reduction {}'.format(self.reduction))
+            raise Exception(f'Unexpected reduction {self.reduction}')
 
 
 class BalanceCrossEntropyLoss(nn.Module):
@@ -66,7 +66,7 @@ class BalanceCrossEntropyLoss(nn.Module):
     '''
 
     def __init__(self, negative_ratio=3.0, eps=1e-6):
-        super(BalanceCrossEntropyLoss, self).__init__()
+        super().__init__()
         self.negative_ratio = negative_ratio
         self.eps = eps
 
@@ -107,7 +107,7 @@ class DiceLoss(nn.Module):
     '''
 
     def __init__(self, eps=1e-6):
-        super(DiceLoss, self).__init__()
+        super().__init__()
         self.eps = eps
 
     def forward(self, pred: torch.Tensor, gt, mask, weights=None):
@@ -138,7 +138,7 @@ class DiceLoss(nn.Module):
 
 class MaskL1Loss(nn.Module):
     def __init__(self, eps=1e-6):
-        super(MaskL1Loss, self).__init__()
+        super().__init__()
         self.eps = eps
 
     def forward(self, pred: torch.Tensor, gt, mask):

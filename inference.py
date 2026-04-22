@@ -84,7 +84,7 @@ def preprocess_img(img, input_size=(1024, 1024), device='cpu', bgr2rgb=True, hal
                 img_in = img_in.half()
     return img_in, ratio, int(dw), int(dh)
 
-def postprocess_mask(img: Union[torch.Tensor, np.ndarray], thresh=None):
+def postprocess_mask(img: torch.Tensor | np.ndarray, thresh=None):
     # img = img.permute(1, 2, 0)
     if isinstance(img, torch.Tensor):
         img = img.squeeze_()
@@ -120,7 +120,7 @@ class TextDetector:
     langcls2idx = {'eng': 0, 'ja': 1, 'unknown': 2}
 
     def __init__(self, model_path, input_size=1024, device='cpu', half=False, nms_thresh=0.35, conf_thresh=0.4, mask_thresh=0.3, act='leaky'):
-        super(TextDetector, self).__init__()
+        super().__init__()
         cuda = device == 'cuda'
 
         if Path(model_path).suffix == '.onnx':
@@ -189,7 +189,7 @@ def traverse_by_dict(img_dir_list, dict_dir):
         imgname = osp.basename(img_path)
         imname = imgname.replace(Path(imgname).suffix, '')
         mask_path = osp.join(dict_dir, 'mask-'+imname+'.png')
-        with open(osp.join(dict_dir, imname+'.json'), 'r', encoding='utf8') as f:
+        with open(osp.join(dict_dir, imname+'.json'), encoding='utf8') as f:
             blk_dict_list = json.loads(f.read())
             blk_list = [TextBlock(**blk_dict) for blk_dict in blk_dict_list]
         img = cv2.imread(img_path)

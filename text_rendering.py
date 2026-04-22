@@ -425,7 +425,7 @@ def render_comictext(comic_sampler_list, img_dir, label_dir=None, render_num=700
         rst, rst_msk, block_dicts, yolo_labels, textpolylines = comic_sampler_list[cs_idx].drawtext_one_page(im_in=img, bboxlist=bboxlist, adaptive_color=True)
         if save_dir is not None:
             if save_prefix is not None:
-                save_name = save_prefix + '{0:09d}'.format(ii) + '.jpg'
+                save_name = save_prefix + f'{ii:09d}' + '.jpg'
             else:
                 save_name = 'syn-' + imgname
             yolo_save_path = osp.join(save_dir, save_name.replace(pathlib.Path(save_name).suffix, '.txt'))

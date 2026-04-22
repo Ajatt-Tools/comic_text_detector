@@ -41,7 +41,7 @@ def minxor_thresh(threshed, mask, dilate=False):
     else:
         return threshed, xor_sum
 
-def get_otsuthresh_masklist(img, pred_mask, per_channel=False) -> List[np.ndarray]:
+def get_otsuthresh_masklist(img, pred_mask, per_channel=False) -> list[np.ndarray]:
     channels = [img[..., 0], img[..., 1], img[..., 2]]
     mask_list = []
     for c in channels:
@@ -133,7 +133,7 @@ def merge_mask_list(mask_list, pred_mask, blk: TextBlock = None, pred_thresh=30,
     return mask_merged
 
 
-def refine_undetected_mask(img: np.ndarray, mask_pred: np.ndarray, mask_refined: np.ndarray, blk_list: List[TextBlock], refine_mode=REFINEMASK_INPAINT):
+def refine_undetected_mask(img: np.ndarray, mask_pred: np.ndarray, mask_refined: np.ndarray, blk_list: list[TextBlock], refine_mode=REFINEMASK_INPAINT):
     mask_pred[np.where(mask_refined > 30)] = 0
     _, pred_mask_t = cv2.threshold(mask_pred, 30, 255, cv2.THRESH_BINARY)
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(pred_mask_t, 4, cv2.CV_16U)
@@ -157,7 +157,7 @@ def refine_undetected_mask(img: np.ndarray, mask_pred: np.ndarray, mask_refined:
     return mask_refined
 
 
-def refine_mask(img: np.ndarray, pred_mask: np.ndarray, blk_list: List[TextBlock], refine_mode: int = REFINEMASK_INPAINT) -> np.ndarray:
+def refine_mask(img: np.ndarray, pred_mask: np.ndarray, blk_list: list[TextBlock], refine_mode: int = REFINEMASK_INPAINT) -> np.ndarray:
     mask_refined = np.zeros_like(pred_mask)
     for blk in blk_list:
         bx1, by1, bx2, by2 = expand_textwindow(img.shape, blk.xyxy, expand_r=16)

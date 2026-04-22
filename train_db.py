@@ -53,7 +53,7 @@ def eval_model(model: nn.Module, val_loader, post_process, metric_cls):
             raw_metric = metric_cls.validate_measure(batch, (boxes, scores))
             raw_metrics.append(raw_metric)
     metrics = metric_cls.gather_measure(raw_metrics)
-    LOGGER.info('FPS:{}'.format(total_frame / total_time))
+    LOGGER.info(f'FPS:{total_frame / total_time}')
     return metrics['recall'].avg, metrics['precision'].avg, metrics['fmeasure'].avg
 
 def train(hyp):
@@ -199,7 +199,7 @@ def train(hyp):
 
 if __name__ == '__main__':
     hyp_p = r'data/train_db_hyp.yaml'
-    with open(hyp_p, 'r', encoding='utf8') as f:
+    with open(hyp_p, encoding='utf8') as f:
         hyp = yaml.safe_load(f.read())
 
     # hyp['data']['train_img_dir'] = r'../datasets/pixanimegirls/processed'

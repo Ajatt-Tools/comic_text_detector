@@ -248,7 +248,7 @@ def create_dataloader(img_dir, ann_dir, imgsz, batch_size, augment=False, aug_pa
 if __name__ == '__main__':
     img_dir = 'data/dataset/db_sub'
     hyp_p = r'data/train_db_hyp.yaml'
-    with open(hyp_p, 'r', encoding='utf8') as f:
+    with open(hyp_p, encoding='utf8') as f:
         hyp = yaml.safe_load(f.read())
     hyp['data']['train_img_dir'] = img_dir
     hyp['data']['cache'] = False
