@@ -3,8 +3,6 @@ import copy
 import cv2
 import torch
 import torch.nn as nn
-from torchsummary import summary
-
 from comic_text_detector.models.yolov5.common import C3, Conv
 from comic_text_detector.models.yolov5.yolo import load_yolov5_ckpt
 from comic_text_detector.utils.weight_init import init_weights
@@ -255,8 +253,7 @@ class TextDetBaseDNN:
         blks, mask, lines_map  = self.model.forward(self.uoln)
         return blks, mask, lines_map
 
-if __name__ == '__main__':
-    device = 'cuda'
+def main():
     weights = r'data/yolov5sblk.ckpt'
 
     # yolov5s_backbone = load_yolov5_ckpt(weights=weights, map_location='cpu')
@@ -264,10 +261,15 @@ if __name__ == '__main__':
     model = TextDetector(weights, map_location=DEVICE)
     model.to(DEVICE)
     model.train_mask()
-    summary(model, (3, 640, 640), device=DEVICE)
+    # Commented out: torchsummary is not included in the project dependencies and is not used by Lancet.
+    # summary(model, (3, 640, 640), device=DEVICE)
 
     # model.initialize_db(unet_weights='data/unet_head.pt')
     # model.train_db()
     # summary(model, (3, 640, 640), device=DEVICE)
+
+
+if __name__ == '__main__':
+    main()
 
 
