@@ -1,7 +1,6 @@
 import json
 import os.path as osp
 from pathlib import Path
-from typing import Union
 
 import cv2
 import numpy as np
@@ -23,7 +22,7 @@ def model2annotations(model_path, img_dir_list, save_dir, save_json=False):
         img_dir_list = [img_dir_list]
     cuda = torch.cuda.is_available()
     device = 'cuda' if cuda else 'cpu'
-    model = TextDetector(model_path=model_path, input_size=1024, device=device, act='leaky')  
+    model = TextDetector(model_path=model_path, input_size=1024, device=device, act='leaky')
     imglist = []
     for img_dir in img_dir_list:
         imglist += find_all_imgs(img_dir, abs_path=True)
@@ -130,7 +129,7 @@ class TextDetector:
         else:
             self.net = TextDetBase(model_path, device=device, act=act)
             self.backend = 'torch'
-        
+
         if isinstance(input_size, int):
             input_size = (input_size, input_size)
         self.input_size = input_size
@@ -161,7 +160,7 @@ class TextDetector:
         box_thresh = 0.6
         idx = np.where(scores[0] > box_thresh)
         lines, scores = lines[0][idx], scores[0][idx]
-        
+
         # map output to input img
         mask = mask[: mask.shape[0]-dh, : mask.shape[1]-dw]
         mask = cv2.resize(mask, (im_w, im_h), interpolation=cv2.INTER_LINEAR)
@@ -176,7 +175,7 @@ class TextDetector:
         mask_refined = refine_mask(img, mask, blk_list, refine_mode=refine_mode)
         if keep_undetected_mask:
             mask_refined = refine_undetected_mask(img, mask, mask_refined, blk_list, refine_mode=refine_mode)
-    
+
         return mask, mask_refined, blk_list
 
 def traverse_by_dict(img_dir_list, dict_dir):
@@ -201,7 +200,8 @@ def traverse_by_dict(img_dir_list, dict_dir):
         cv2.imshow('mask', mask)
         cv2.waitKey(0)
 
-if __name__ == '__main__':
+
+def main() -> None:
     device = 'cpu'
     model_path = 'data/comictextdetector.pt'
     model_path = 'data/comictextdetector.pt.onnx'
@@ -209,3 +209,7 @@ if __name__ == '__main__':
     save_dir = r'data/backup'
     model2annotations(model_path, img_dir, save_dir, save_json=True)
     traverse_by_dict(img_dir, save_dir)
+
+
+if __name__ == '__main__':
+    main()
