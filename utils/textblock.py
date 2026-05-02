@@ -1,6 +1,5 @@
 import copy
 import math
-from typing import List
 
 import cv2
 import numpy as np
@@ -12,10 +11,10 @@ LANG_LIST = ['eng', 'ja', 'unknown']
 LANGCLS2IDX = {'eng': 0, 'ja': 1, 'unknown': 2}
 
 class TextBlock:
-    def __init__(self, xyxy: list, 
-                       lines: list = None, 
+    def __init__(self, xyxy: list,
+                       lines: list = None,
                        language: str = 'unknown',
-                       vertical: bool = False, 
+                       vertical: bool = False,
                        font_size: float = -1,
                        distance: list = None,
                        angle: int = 0,
@@ -30,7 +29,7 @@ class TextBlock:
                        fg_b = 0,
                        bg_r = 0,
                        bg_g = 0,
-                       bg_b = 0,                
+                       bg_b = 0,
                        line_spacing = 1.,
                        font_family: str = "",
                        bold: bool = False,
@@ -49,7 +48,7 @@ class TextBlock:
         self.vertical = vertical            # orientation of textlines
         self.language = language
         self.font_size = font_size          # font pixel size
-        self.distance = None if distance is None else np.array(distance, np.float64)   # distance between textlines and "origin"          
+        self.distance = None if distance is None else np.array(distance, np.float64)   # distance between textlines and "origin"
         self.angle = angle                  # rotation angle of textlines
 
         self.vec = None if vec is None else np.array(vec, np.float64) # primary vector of textblock
@@ -63,7 +62,7 @@ class TextBlock:
         self.translation = translation
 
         # note they're accumulative rgb values of textlines
-        self.fg_r = fg_r                       
+        self.fg_r = fg_r
         self.fg_g = fg_g
         self.fg_b = fg_b
         self.bg_r = bg_r
@@ -119,7 +118,7 @@ class TextBlock:
     def center(self):
         xyxy = np.array(self.xyxy)
         return (xyxy[:2] + xyxy[2:]) / 2
-    
+
     def min_rect(self, rotate_back=True):
         angled = self.angle != 0
         center = self.center()
@@ -206,7 +205,7 @@ class TextBlock:
         # set font color
         frgb = np.array(frgb) * num_lines
         self.fg_r, self.fg_g, self.fg_b = frgb
-        # set stroke color  
+        # set stroke color
         srgb = np.array(srgb) * num_lines
         self.bg_r, self.bg_g, self.bg_b = srgb
 
@@ -231,7 +230,7 @@ class TextBlock:
         x, y, w, h = self.xyxy
         return [x, y, w-x, h-y]
 
-    # alignleft: 0, center: 1, right: 2 
+    # alignleft: 0, center: 1, right: 2
     def alignment(self):
         if self._alignment >= 0:
             return self._alignment
@@ -245,7 +244,7 @@ class TextBlock:
         if angled:
             polygons = rotate_polygons((0, 0), polygons, self.angle)
         polygons = polygons.reshape(-1, 4, 2)
-        
+
         left_std = np.std(polygons[:, 0, 0])
         # right_std = np.std(polygons[:, 1, 0])
         center_std = np.std((polygons[:, 0, 0] + polygons[:, 1, 0]) / 2)
@@ -295,7 +294,7 @@ def sort_textblk_list(blk_list: list[TextBlock], im_w: int, im_h: int) -> list[T
     grid_weights = grid_indices * img_area + 1.2 * (center_x - grid_x * im_w / num_gridx) + (center_y - grid_y * im_h / num_gridy)
     if im_w != im_oriw:
         grid_weights[np.where(grid_x >= num_gridx)] += img_area * num_gridy * num_gridx
-    
+
     for blk, weight in zip(blk_list, grid_weights):
         blk.weight = weight
     blk_list.sort(key=lambda blk: blk.weight)
@@ -315,7 +314,7 @@ def examine_textblk(blk: TextBlock, im_w: int, im_h: int, sort: bool = False) ->
         vertical = norm_v > norm_h
     else:
         vertical = norm_v > norm_h * 2
-    # calculate distance between textlines and origin 
+    # calculate distance between textlines and origin
     if vertical:
         primary_vec, primary_norm = v, norm_v
         distance_vectors = center_pnts - np.array([[im_w, 0]], dtype=np.float64)   # vertical manga text is read from right to left, so origin is (imw, 0)
@@ -324,7 +323,7 @@ def examine_textblk(blk: TextBlock, im_w: int, im_h: int, sort: bool = False) ->
         primary_vec, primary_norm = h, norm_h
         distance_vectors = center_pnts - np.array([[0, 0]], dtype=np.float64)
         font_size = int(round(norm_v / len(lines)))
-    
+
     rotation_angle = int(math.atan2(primary_vec[1], primary_vec[0]) / math.pi * 180)     # rotation angle of textlines
     distance = np.linalg.norm(distance_vectors, axis=1)     # distance between textlinecenters and origin
     rad_matrix = np.arccos(np.einsum('ij, j->i', distance_vectors, primary_vec) / (distance * primary_norm))
@@ -457,7 +456,7 @@ def group_output(blks, lines, im_w, im_h, mask=None, sort_blklist=True) -> list[
     # step2: filter textblocks, sort & split textlines
     final_blk_list = []
     for blk in blk_list:
-        # filter textblocks 
+        # filter textblocks
         if len(blk.lines) == 0:
             bx1, by1, bx2, by2 = blk.xyxy
             if mask is not None:
@@ -467,7 +466,7 @@ def group_output(blks, lines, im_w, im_h, mask=None, sort_blklist=True) -> list[
             xywh = np.array([[bx1, by1, bx2-bx1, by2-by1]])
             blk.lines = xywh2xyxypoly(xywh).reshape(-1, 4, 2).tolist()
         examine_textblk(blk, im_w, im_h, sort=True)
-        
+
         # split manga text if there is a distance gap
         textblock_splitted = False
         if len(blk.lines) > 1:
@@ -506,7 +505,7 @@ def group_output(blks, lines, im_w, im_h, mask=None, sort_blklist=True) -> list[
             lines[..., 1] = np.clip(lines[..., 1], 0, im_h-1)
             blk.lines = lines.astype(np.int64).tolist()
             blk.font_size += expand_size
-            
+
     return final_blk_list
 
 def visualize_textblocks(canvas, blk_list:  list[TextBlock]):
